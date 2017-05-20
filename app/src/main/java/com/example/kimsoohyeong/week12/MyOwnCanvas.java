@@ -29,8 +29,8 @@ public class MyOwnCanvas extends View {
     private boolean isColoring = false;
     private boolean isBigWidth = false;
     private int penColor = 0; // 0 : RED, 1 : BLUE
-    private final int defaultPenStrokeWidth = 10;
-    private final int bigPenStrokeWidth = 50;
+    private final int defaultPenStrokeWidth = 3;
+    private final int bigPenStrokeWidth = 5;
     private String operationType = "";
 
     public MyOwnCanvas(Context context) {
@@ -65,6 +65,21 @@ public class MyOwnCanvas extends View {
     public void clear() {
         mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
         mCanvas.drawColor(Color.WHITE);
+        invalidate();
+    }
+
+    public Bitmap getBitmap() {
+        return mBitMap;
+    }
+
+    public void openImg(Bitmap loadImg) {
+        float scaleWidth = loadImg.getWidth()/1.414f;
+        float scaleHeight = loadImg.getHeight()/1.414f;
+        Bitmap printImg = Bitmap.createScaledBitmap(loadImg,
+                (int) scaleWidth, (int) scaleHeight, false);
+        mCanvas.drawBitmap(printImg,
+                getWidth()/2 - printImg.getWidth()/2,
+                getHeight()/2 - printImg.getHeight()/2, null);
         invalidate();
     }
 
@@ -103,7 +118,8 @@ public class MyOwnCanvas extends View {
         if (operationType.equals("rotate")) {
             Log.d("DEBUG", "MODE : " + operationType);
             mCanvas.rotate(30, x, y);
-            x -= img.getWidth()/2; y -= img.getHeight()/2;
+            x -= img.getWidth() / 2;
+            y -= img.getHeight() / 2;
             mCanvas.drawBitmap(img, x, y, mPaint);
             mCanvas.restore();
             operationType = "";
@@ -112,7 +128,8 @@ public class MyOwnCanvas extends View {
 
         if (operationType.equals("move")) {
             Log.d("DEBUG", "MODE : " + operationType);
-            x += addX; y += addY;
+            x += addX;
+            y += addY;
         }
 
         if (operationType.equals("scale")) {
@@ -121,7 +138,8 @@ public class MyOwnCanvas extends View {
             float scaleY = img.getHeight() * scaleFactor;
             Bitmap largeImg = Bitmap.createScaledBitmap(img, (int) scaleX,
                     (int) scaleY, false);
-            x -= largeImg.getWidth()/2; y -= largeImg.getHeight()/2;
+            x -= largeImg.getWidth() / 2;
+            y -= largeImg.getHeight() / 2;
             mCanvas.drawBitmap(largeImg, x, y, mPaint);
             operationType = "";
             return;
@@ -131,7 +149,8 @@ public class MyOwnCanvas extends View {
             // TODO : SKEW가 자꾸 Y축에 평행하게 밀리는거 수정
             Log.d("DEBUG", "MODE : " + operationType);
             Log.d("POINT", "X : " + x + " & Y : " + y);
-            x -= img.getWidth()/2; y -= img.getHeight()/2;
+            x -= img.getWidth() / 2;
+            y -= img.getHeight() / 2;
             mCanvas.skew(0.2f, 0);
             mCanvas.drawBitmap(img, x - 250 * y / 1245, y, mPaint);
             mCanvas.restore();
@@ -141,13 +160,15 @@ public class MyOwnCanvas extends View {
 
         operationType = "";
 
-        x -= img.getWidth()/2; y -= img.getHeight()/2;
+        x -= img.getWidth() / 2;
+        y -= img.getHeight() / 2;
         Log.d("DEBUG", "X : " + x + " & Y : " + y);
 
         mCanvas.drawBitmap(img, x, y, mPaint);
     }
 
     int oldX = -1, oldY = -1;
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         Log.d("DEBUG", isStamp ? "TRUE" : "FALSE");

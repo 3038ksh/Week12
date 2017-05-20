@@ -1,5 +1,7 @@
 package com.example.kimsoohyeong.week12;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +11,18 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Toast;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class MyOwnCanvasActivity extends AppCompatActivity {
     MyOwnCanvas myOwnCanvas;
@@ -87,11 +101,31 @@ public class MyOwnCanvasActivity extends AppCompatActivity {
             if (v.getId() == R.id.eraser) {
                 myOwnCanvas.clear();
             } else if (v.getId() == R.id.open) {
-                myOwnCanvas.clear();
-                // TODO : OPEN
+                File f = new File(getFilesDir() + "picture.jpg");
+                if (f.isFile()) {
+                    myOwnCanvas.clear();
+                    Bitmap loadImg = BitmapFactory.decodeFile(getFilesDir() + "picture.jpg");
+                    myOwnCanvas.openImg(loadImg);
+                } else {
+                    Toast.makeText(this, "저장된 파일이 없습니다.",
+                            Toast.LENGTH_SHORT).show();
+                }
+                // TODO : 그림 띄워주기
             } else if (v.getId() == R.id.save) {
                 // TODO : SAVE
-
+                Bitmap saveImg = myOwnCanvas.getBitmap();
+                try {
+                    FileOutputStream fos = new FileOutputStream(
+                            getFilesDir() + "picture.jpg");
+                    saveImg.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    fos.close();
+                    Toast.makeText(this, "저장완료",
+                            Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
